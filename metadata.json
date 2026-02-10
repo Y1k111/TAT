@@ -1,0 +1,8 @@
+{
+  "name": "EPhone Web",
+  "description": "A mobile-simulated chat application with social features, adapted for iOS full-screen experience.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
