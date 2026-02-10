@@ -57,8 +57,8 @@ body {
     flex-direction: column;
     background-color: #000; /* 保留一个默认的黑色背景 */
     
-    /* 核心修改：应用底部安全距离，防止内容被Home条遮挡 */
-    padding-bottom: var(--safe-bottom); 
+    /* 修正：移除 padding-bottom，让容器撑满到底，避免出现底部空隙 */
+    padding-bottom: 0; 
     box-sizing: border-box;
 }
 
@@ -109,16 +109,21 @@ body {
 
 /* 5. 【核心】让聊天输入框和底部导航栏自动适应iPhone底部的“小黑条”安全区 */
 #chat-input-area {
-    /* 核心修改：底部 Padding 加上安全区域 */
+    /* 核心修改：底部 Padding 加上安全区域，保证背景延伸到底部 */
     padding-bottom: calc(8px + var(--safe-bottom));
-    background-color: rgba(247, 247, 247, 0.95); /* 稍微不透明一点防止底部透出 */
+    background-color: rgba(247, 247, 247, 0.95); 
+    /* 确保它在最底部 */
+    margin-bottom: 0;
 }
 
 #chat-list-bottom-nav {
     /* 核心修改：底部 Padding 加上安全区域 */
     padding-bottom: calc(5px + var(--safe-bottom));
+    /* 高度包含安全区域 */
     height: calc(55px + var(--safe-bottom));
     box-sizing: border-box;
+    /* 确保背景不透明，遮挡列表 */
+    background-color: rgba(247, 247, 247, 0.96);
 }
 
 /* 修复内容区域的顶部 Padding，防止被增高的 Header 遮挡 */
@@ -134,11 +139,15 @@ body {
     /* 核心修改：Header 高度变了，这里也要变 */
     padding-top: calc(65px + var(--safe-top)) !important;
     margin-top: calc(-65px - var(--safe-top)) !important;
+    
+    /* 核心修改：给所有列表增加底部安全距离，防止内容被底部圆角或小黑条遮挡 */
+    padding-bottom: calc(20px + var(--safe-bottom));
 }
 
 #qzone-screen .qzone-content {
     /* 动态页面不需要 margin-top 负值技巧，直接 padding */
     padding-top: 0;
+    padding-bottom: calc(60px + var(--safe-bottom));
 }
 
 #chat-messages {
@@ -217,11 +226,13 @@ body {
     background-color: var(--secondary-bg);
 }
 
-/* 修改后的 #chat-list 样式，去掉了 padding 和 margin */
+/* 修改后的 #chat-list 样式 */
 #chat-list {
     flex-grow: 1;
     background-color: var(--secondary-bg);
-    padding-bottom: 50px; /* 为底部导航栏留出空间 */
+    /* 修正：增加底部 Padding，确保最后一条消息不被 Nav Bar 遮挡。
+       Nav Bar 高度约 55px + 34px(Max Safe) ≈ 90px。 */
+    padding-bottom: calc(65px + var(--safe-bottom)); 
     box-sizing: border-box;
 }
 
