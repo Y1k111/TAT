@@ -41,8 +41,8 @@ body {
     margin: 0;
     font-family: 'bulangni', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-weight: normal;
-    background-color: #f0f2f5; 
-    /* 核心修改：防止iOS回弹效果露出背景 */
+    /* 核心修复：改为纯黑背景。这样任何未覆盖的底部区域都会看起来像手机边框，而不是白色空隙 */
+    background-color: #000; 
     position: fixed;
     width: 100%;
 }
@@ -74,13 +74,24 @@ body {
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
-    color: white; 
+    
+    /* 核心修复：默认改为黑色文字，适应APP内部白色背景 */
+    color: var(--text-primary); 
+    
     z-index: 20; 
     font-size: 14px; 
     box-sizing: border-box; 
     pointer-events: none; 
-    /* 增加渐变背景使文字在浅色壁纸上可见 */
-    background: linear-gradient(to bottom, rgba(0,0,0,0.3), transparent);
+    
+    /* 核心修复：移除“暗角”渐变背景，改为全透明 */
+    background: transparent;
+    transition: color 0.3s ease;
+}
+
+/* 新增：在主页或壁纸页时，状态栏变为白色并加阴影 */
+#status-bar.text-white {
+    color: white !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5); /* 保证在浅色壁纸上也能看清 */
 }
 
 /* 4. 【核心】让所有页面的头部自动适应iPhone的“刘海”安全区 */
@@ -670,6 +681,17 @@ body {
                 updateChatList();
             }
         }
+        
+        // 核心修改：动态切换状态栏文字颜色
+        // 主页或壁纸页使用白色文字，其他页面使用黑色文字（或主题色）
+        const statusBar = document.getElementById('status-bar');
+        if(statusBar) {
+            if(screenId === 'home-screen' || screenId === 'wallpaper-screen') {
+                statusBar.classList.add('text-white');
+            } else {
+                statusBar.classList.remove('text-white');
+            }
+        }
     }
 
     window.applyTheme = function(theme) {
@@ -693,9 +715,10 @@ body {
             root.style.setProperty('--text-secondary', '#8a8a8e');
             root.style.setProperty('--border-color', '#c6c6c8');
             
-            document.body.style.backgroundColor = '#f2f2f7';
+            // 保持body黑色，只改变内部容器颜色
+            document.body.style.backgroundColor = '#000'; 
             const phoneScreen = document.getElementById('phone-screen');
-            if(phoneScreen) phoneScreen.style.backgroundColor = '#f2f2f7';
+            if(phoneScreen) phoneScreen.style.backgroundColor = '#000';
             
             const meta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
             if(meta) meta.setAttribute('content', 'default');
